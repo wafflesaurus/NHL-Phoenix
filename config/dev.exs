@@ -37,7 +37,7 @@ config :phoenix, :stacktrace_depth, 20
 config :nhl_phoenix, NhlPhoenix.Repo,
   adapter: Ecto.Adapters.Postgres,
   username: "postgres",
-  password: "2cOLD!@#",
+  password: "postgres",
   database: "nhl_phoenix_dev",
   hostname: "localhost",
   pool_size: 10
