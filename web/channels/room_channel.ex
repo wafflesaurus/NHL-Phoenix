@@ -2,9 +2,6 @@ defmodule NhlPhoenix.RoomChannel do
   use Phoenix.Channel
 
   def join("room:lobby", _message, socket) do
-    # NhlPhoenix.Live.start_link
-    # NhlPhoenix.Super.start_link
-
     {:ok, socket}
   end
 

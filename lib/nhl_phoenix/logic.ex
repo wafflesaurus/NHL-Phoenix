@@ -8,11 +8,11 @@ defmodule NhlPhoenix.Logic do
 
 	def init([sup]) when is_pid(sup) do
 		send(self, :start_worker_supervisor)
-	   {:ok, sup}
+	  {:ok, sup}
 	end
 
 	def handle_info(:start_worker_supervisor, sup) do
-		IO.inspect "State"
+		IO.inspect "State Start Work Super"
 		IO.inspect sup
     {:ok, in_progress_sup} = Supervisor.start_child(sup, supervisor_spec)
 		{:ok, active_games_sup} = Supervisor.start_child(sup, other_spec)
@@ -26,6 +26,12 @@ defmodule NhlPhoenix.Logic do
 		new_worker(in_progress_sup)
 		new_worker(active_games_sup)
     {:noreply, []}
+	end
+
+	def handle_info({:games_are_on, body}, state) do
+		IO.inspect "MESSAGE RECEIVED"
+		IO.inspect body
+		{:noreply, state}
 	end
 
 
