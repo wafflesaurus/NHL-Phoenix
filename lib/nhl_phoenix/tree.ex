@@ -10,7 +10,7 @@ defmodule Tree do
 	end
 
 	def start_pool do
-		Tree.Super.start_link
+		NhlPhoenix.Super.start_link
 	end
 
 end

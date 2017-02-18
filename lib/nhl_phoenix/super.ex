@@ -1,4 +1,4 @@
-defmodule Tree.OtherSuper do
+defmodule NhlPhoenix.Super do
 	use Supervisor
 
 	def start_link do
@@ -7,9 +7,9 @@ defmodule Tree.OtherSuper do
 
 	def init([]) do
 		children = [
-			worker(Worker, [])
+			worker(NhlPhoenix.Logic, [self])
 		]
 
-		supervise(children, strategy: :simple_one_for_one)
+		supervise(children, strategy: :one_for_one)
 	end
 end
