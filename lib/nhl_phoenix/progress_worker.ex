@@ -27,12 +27,12 @@ defmodule ProgressWorker do
   end
 
   defp in_progress?({:ok, %HTTPoison.Response{body: body, status_code: 200}}) do
-    if body == "true" do
+    # if body == "true" do
 			get_current_date
 			|> get_active_games
 			|> todays_games
 			|> notify_parent
-		end
+		# end
   end
 
 	 defp get_games_status do

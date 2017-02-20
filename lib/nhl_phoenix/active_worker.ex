@@ -1,11 +1,11 @@
 defmodule ActiveWorker do
 	use GenServer
 
-	def start_link([_game_data, game_id] = state) do
+	def start_link([game_id] = state) do
 
-		name = "GID#{game_id}"
-		atom = String.to_atom(name)
-		GenServer.start_link(__MODULE__, state, name: atom)
+		# name = "GID#{game_id}"
+		# atom = String.to_atom(name)
+		GenServer.start_link(__MODULE__, state, name: game_id)
 	end
 
 	def init(state) do
