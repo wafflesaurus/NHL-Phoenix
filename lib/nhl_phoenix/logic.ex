@@ -24,16 +24,26 @@ defmodule NhlPhoenix.Logic do
 		IO.inspect active_games_sup
 
 		new_worker(in_progress_sup)
-		new_worker(active_games_sup)
-    {:noreply, []}
+
+    {:noreply, [active: active_games_sup]}
 	end
 
-	def handle_info({:games_are_on, body}, state) do
+	def handle_info({:games_are_on, games}, state) do
 		IO.inspect "MESSAGE RECEIVED"
-		IO.inspect body
+		Enum.each(games, fn(game_data) ->
+			 new_game(state, game_data)
+		 end)
 		{:noreply, state}
 	end
 
+	defp new_game(state, %{"GlobalGameID" => game_id} = game_data ) do
+		IO.inspect "/////////////////////////////////////////////////"
+		IO.inspect game_id
+
+    {:ok, worker} = Supervisor.start_child(state[:active], [[game_data, game_id]])
+		IO.inspect worker
+    worker
+	end
 
 	defp new_worker(sup) do
     {:ok, worker} = Supervisor.start_child(sup, [[]])

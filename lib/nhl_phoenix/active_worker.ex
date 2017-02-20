@@ -1,18 +1,24 @@
 defmodule ActiveWorker do
 	use GenServer
 
-	def start_link(_) do
-		GenServer.start_link(__MODULE__, :ok, [])
+	def start_link([_game_data, game_id] = state) do
+
+		name = "GID#{game_id}"
+		atom = String.to_atom(name)
+		GenServer.start_link(__MODULE__, state, name: atom)
 	end
 
 	def init(state) do
+		IO.inspect "//////// GAME WORKER ////////"
 		schedule_work()
 		{:ok, state}
 	end
 
-	def handle_info(:work, state) do
+	def handle_info(:work, [game_data, _game_id] = state) do
 		IO.inspect "##########################"
 		IO.inspect "Active worker"
+
+		IO.inspect game_data
 
 		NhlPhoenix.Endpoint.broadcast! "room:lobby", "new_msg", %{body: "Active Games Ping"}
 		schedule_work()
