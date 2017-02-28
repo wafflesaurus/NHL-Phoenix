@@ -16,6 +16,7 @@ defmodule NhlPhoenix do
       # worker(NhlPhoenix.Worker, [arg1, arg2, arg3]),
 
       # Start supervisor for managing active games
+      supervisor(Registry, [:unique, :game_reg]),
       supervisor(NhlPhoenix.Super, [])
     ]
 

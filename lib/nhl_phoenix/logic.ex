@@ -1,6 +1,9 @@
 defmodule NhlPhoenix.Logic do
 	use GenServer
+	require Logger
 	import Supervisor.Spec
+
+	@game_reg :game_reg
 
 	def start_link(sup) do
 		GenServer.start_link(__MODULE__, [sup], name: __MODULE__)
@@ -34,7 +37,7 @@ defmodule NhlPhoenix.Logic do
 
 	def handle_info({:games_are_on, games}, state) do
 		IO.inspect "MESSAGE RECEIVED"
-		g = get_game_ids(games) |> convert_ids_to_atoms
+		g = get_game_ids(games)
 		IO.inspect g
 		childs = Supervisor.which_children(state.active)
 		IO.inspect childs
@@ -51,21 +54,16 @@ defmodule NhlPhoenix.Logic do
 		end)
 	end
 
-	defp convert_ids_to_atoms(games) do
-		Enum.map(games, fn(id) ->
-			name = "#{id}"
-			atom = String.to_atom(name)
-			atom
-		end)
-	end
-
 	defp new_game(state, game_id ) do
 		IO.inspect "/////////////////////////////////////////////////"
 		IO.inspect game_id
-
-    {:ok, worker} = Supervisor.start_child(state.active, [[game_id]])
-		IO.inspect worker
-    worker
+		case Supervisor.start_child(state.active, [[game_id]]) do
+	    {:ok, worker} -> {:ok, game_id}
+			{:error, {:already_started, _pid}} -> {:error, :process_already_exists}
+      other -> {:error, other}
+			# IO.inspect worker
+	    # worker
+		end
 	end
 
 	defp new_worker(sup) do
