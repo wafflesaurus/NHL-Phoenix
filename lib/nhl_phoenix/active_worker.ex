@@ -22,18 +22,13 @@ defmodule ActiveWorker do
 	def handle_info(:active_work, [game_id] = state) do
 		IO.inspect "##########################"
 		IO.inspect "Active worker"
+		score = get_box_score(game_id) |> parse_response
+		IO.inspect score
 
-		IO.inspect game_id
-
-		NhlPhoenix.Endpoint.broadcast! "room:lobby", "new_msg", %{body: "Active Games Ping"}
+		NhlPhoenix.Endpoint.broadcast! "room:lobby", "new_msg", %{body: "Active Games Ping", data: score}
 		schedule_work()
 		{:noreply, state}
 	end
-
-	# def handle_info(_, state) do
-	# 	IO.inspect "/// CATCH ALL active worker ////"
-	# 	{:noreply, state}
-	# end
 
 	defp schedule_work() do
 		IO.inspect "schedule work"
@@ -43,11 +38,11 @@ defmodule ActiveWorker do
   defp parse_response({:ok, %HTTPoison.Response{body: body, status_code: 200}}) do
     body
     |> JSON.decode!
-    |> are_games_in_progress?
+    body
   end
 
-  def are_games_in_progress? do
-    url = "https://api.fantasydata.net/nhl/v2/json/AreAnyGamesInProgress"
+  def get_box_score(game_id) do
+    url = "https://api.fantasydata.net/nhl/v2/json/BoxScore/#{game_id}"
     HTTPoison.get(url, headers, [ ssl: [{:versions, [:'tlsv1.2']}] ])
   end
 

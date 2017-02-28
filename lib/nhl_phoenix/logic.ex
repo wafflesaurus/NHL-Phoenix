@@ -49,7 +49,7 @@ defmodule NhlPhoenix.Logic do
 
 	defp get_game_ids(games) do
 		Enum.map(games, fn(game) ->
-			%{"GlobalGameID" => id} = game
+			%{"GameID" => id} = game
 			id
 		end)
 	end

@@ -15,7 +15,7 @@ defmodule NhlPhoenix do
       # Start your own worker by calling: NhlPhoenix.Worker.start_link(arg1, arg2, arg3)
       # worker(NhlPhoenix.Worker, [arg1, arg2, arg3]),
 
-      # Start supervisor for managing active games
+      # Start supervisor and registry for managing active games
       supervisor(Registry, [:unique, :game_reg]),
       supervisor(NhlPhoenix.Super, [])
     ]
