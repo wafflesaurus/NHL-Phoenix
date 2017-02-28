@@ -14,7 +14,6 @@ defmodule ActiveWorker do
 	defp via_tuple(game_id), do: {:via, Registry, {@registry_name, game_id}}
 
 	def init(state) do
-		IO.inspect "//////// GAME WORKER ////////"
 		schedule_work()
 		{:ok, state}
 	end
@@ -31,7 +30,6 @@ defmodule ActiveWorker do
 	end
 
 	defp schedule_work() do
-		IO.inspect "schedule work"
     Process.send_after(self(), :active_work, 10000) # In 2 hours
   end
 

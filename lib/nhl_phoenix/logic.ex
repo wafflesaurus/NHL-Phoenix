@@ -19,16 +19,9 @@ defmodule NhlPhoenix.Logic do
 	end
 
 	def handle_info(:start_worker_supervisor, sup) do
-		IO.inspect "State Start Work Super"
-		IO.inspect sup
+
     {:ok, in_progress_sup} = Supervisor.start_child(sup, supervisor_spec)
 		{:ok, active_games_sup} = Supervisor.start_child(sup, other_spec)
-
-		IO.inspect "In Progress Super"
-		IO.inspect in_progress_sup
-
-		IO.inspect "Active Games Super"
-		IO.inspect active_games_sup
 
 		new_worker(in_progress_sup)
 
@@ -36,11 +29,9 @@ defmodule NhlPhoenix.Logic do
 	end
 
 	def handle_info({:games_are_on, games}, state) do
-		IO.inspect "MESSAGE RECEIVED"
 		g = get_game_ids(games)
-		IO.inspect g
 		childs = Supervisor.which_children(state.active)
-		IO.inspect childs
+
 		Enum.each(g, fn(game_id) ->
 			 new_game(state, game_id)
 		end)
@@ -55,14 +46,10 @@ defmodule NhlPhoenix.Logic do
 	end
 
 	defp new_game(state, game_id ) do
-		IO.inspect "/////////////////////////////////////////////////"
-		IO.inspect game_id
 		case Supervisor.start_child(state.active, [[game_id]]) do
 	    {:ok, worker} -> {:ok, game_id}
 			{:error, {:already_started, _pid}} -> {:error, :process_already_exists}
       other -> {:error, other}
-			# IO.inspect worker
-	    # worker
 		end
 	end
 
