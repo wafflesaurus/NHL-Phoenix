@@ -1,5 +1,6 @@
 defmodule ActiveWorker do
 	use GenServer
+	import NhlPhoenix.FantasyWrapper
 	require Logger
 
 	@registry_name :game_reg
@@ -37,14 +38,5 @@ defmodule ActiveWorker do
     body
     |> JSON.decode!
     body
-  end
-
-  def get_box_score(game_id) do
-    url = "https://api.fantasydata.net/nhl/v2/json/BoxScore/#{game_id}"
-    HTTPoison.get(url, headers, [ ssl: [{:versions, [:'tlsv1.2']}] ])
-  end
-
-  def headers do
-    ["Ocp-Apim-Subscription-Key": "de3503a074d64b9e8306d1c078c36c5e"]
   end
 end
