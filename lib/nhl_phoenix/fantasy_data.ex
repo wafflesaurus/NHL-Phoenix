@@ -20,8 +20,28 @@ defmodule NhlPhoenix.FantasyWrapper do
     api_call(url)
   end
 
+	def get_players_by_team(team) do
+    url = "https://api.fantasydata.net/nhl/v2/json/Players/#{team}"
+    api_call(url)
+  end
+
+	def get_player_stats_by_season(season) do
+    url = "https://api.fantasydata.net/nhl/v2/json/PlayerSeasonStats/#{season}"
+    api_call(url)
+  end
+
+	def get_player_stats_by_id(season, player_id) do
+    url = "https://api.fantasydata.net/nhl/v2/json/PlayerSeasonStatsByPlayer/#{season}/#{player_id}"
+    api_call(url)
+  end
+
 	def get_player_stats_by_team(season, team) do
     url = "https://api.fantasydata.net/nhl/v2/json/BoxScore/#{season}/#{team}"
+    api_call(url)
+  end
+
+	def get_player_details_by_id(player_id) do
+    url = "https://api.fantasydata.net/nhl/v2/json/Player/#{player_id}"
     api_call(url)
   end
 
