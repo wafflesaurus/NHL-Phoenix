@@ -6,9 +6,6 @@ defmodule ActiveWorker do
 	@registry_name :game_reg
 
 	def start_link([game_id] = state) do
-
-		# name = "GID#{game_id}"
-		# atom = String.to_atom(name)
 		GenServer.start_link(__MODULE__, state, name: via_tuple(game_id))
 	end
 
@@ -24,8 +21,9 @@ defmodule ActiveWorker do
 		IO.inspect "Active worker"
 		score = get_box_score(game_id)
 		|> parse_response
-
-		IO.inspect score["Game"]["HomeTeam"]
+		if ("foo" in ["foo"] == :false) do
+			IO.inspect score["Game"]["HomeTeam"]
+		end
 
 		NhlPhoenix.Endpoint.broadcast! "room:lobby", "new_msg", %{body: "Active Games Ping", data: score}
 		schedule_work()

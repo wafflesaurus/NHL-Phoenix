@@ -45,6 +45,11 @@ defmodule NhlPhoenix.FantasyWrapper do
     api_call(url)
   end
 
+	def get_team_stats(season) do
+		url = "https://api.fantasydata.net/nhl/v2/json/TeamSeasonStats/#{season}"
+    api_call(url)
+	end
+
 	defp headers do
     ["Ocp-Apim-Subscription-Key": "de3503a074d64b9e8306d1c078c36c5e"]
   end

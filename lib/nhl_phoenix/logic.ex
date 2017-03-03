@@ -2,13 +2,14 @@ defmodule NhlPhoenix.Logic do
 	use GenServer
 	require Logger
 	import Supervisor.Spec
+	import NhlPhoenix.FantasyWrapper
 
 	def start_link(sup) do
 		GenServer.start_link(__MODULE__, [sup], name: __MODULE__)
 	end
 
 	defmodule State do
-    defstruct active: nil, games: nil
+    defstruct active: nil, games: nil, team_stats: nil
   end
 
 	def init([sup]) when is_pid(sup) do
@@ -16,14 +17,21 @@ defmodule NhlPhoenix.Logic do
 	  {:ok, sup}
 	end
 
+	def set_team_state do
+		{:ok, %HTTPoison.Response{body: body, status_code: 200}} = get_team_stats(2017)
+		Poison.Parser.parse!(body)
+	end
+
 	def handle_info(:start_worker_supervisor, sup) do
 
     {:ok, in_progress_sup} = Supervisor.start_child(sup, supervisor_spec())
 		{:ok, active_games_sup} = Supervisor.start_child(sup, other_spec())
+		IO.inspect State
+		team_stats = set_team_state()
 
 		new_worker(in_progress_sup)
 
-    {:noreply, %State{active: active_games_sup}}
+    {:noreply, %State{active: active_games_sup, team_stats: team_stats}}
 	end
 
 	def handle_info({:games_are_on, games}, state) do
@@ -44,6 +52,7 @@ defmodule NhlPhoenix.Logic do
 	end
 
 	defp new_game(state, game_id ) do
+		IO.inspect state
 		case Supervisor.start_child(state.active, [[game_id]]) do
 	    {:ok, _worker} -> {:ok, game_id}
 			{:error, {:already_started, _pid}} -> {:error, :process_already_exists}
