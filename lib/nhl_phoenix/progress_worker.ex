@@ -18,7 +18,7 @@ defmodule ProgressWorker do
 		|> in_progress?
 
 		# are_games_in_progress?
-		NhlPhoenix.Endpoint.broadcast! "room:lobby", "new_msg", %{body: "Are Games in Progress Ping"}
+		# NhlPhoenix.Endpoint.broadcast! "room:lobby", "new_msg", %{body: "Are Games in Progress Ping"}
     schedule_work()
 		{:noreply, state}
 	end

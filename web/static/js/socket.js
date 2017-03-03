@@ -67,8 +67,8 @@ chatInput.addEventListener("keypress", event => {
 
 channel.on("new_msg", payload => {
   let messageItem = document.createElement("li");
-  var data = JSON.parse(payload.data)
-  messageItem.innerText = `${data.Game.HomeTeam} : ${data.Game.AwayTeam}`
+  var data = payload.data
+  if(data) messageItem.innerText = `${data.Game.HomeTeam} : ${data.Game.AwayTeam}`
   messagesContainer.appendChild(messageItem)
 })
 

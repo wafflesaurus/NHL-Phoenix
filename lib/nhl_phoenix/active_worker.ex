@@ -22,8 +22,10 @@ defmodule ActiveWorker do
 	def handle_info(:active_work, [game_id] = state) do
 		IO.inspect "##########################"
 		IO.inspect "Active worker"
-		score = get_box_score(game_id) |> parse_response
-		IO.inspect score
+		score = get_box_score(game_id)
+		|> parse_response
+
+		IO.inspect score["Game"]["HomeTeam"]
 
 		NhlPhoenix.Endpoint.broadcast! "room:lobby", "new_msg", %{body: "Active Games Ping", data: score}
 		schedule_work()
@@ -36,7 +38,6 @@ defmodule ActiveWorker do
 
   defp parse_response({:ok, %HTTPoison.Response{body: body, status_code: 200}}) do
     body
-    |> JSON.decode!
-    body
+    |> Poison.Parser.parse!
   end
 end
