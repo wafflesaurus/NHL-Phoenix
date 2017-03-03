@@ -3,8 +3,6 @@ defmodule NhlPhoenix.Logic do
 	require Logger
 	import Supervisor.Spec
 
-	@game_reg :game_reg
-
 	def start_link(sup) do
 		GenServer.start_link(__MODULE__, [sup], name: __MODULE__)
 	end
@@ -20,8 +18,8 @@ defmodule NhlPhoenix.Logic do
 
 	def handle_info(:start_worker_supervisor, sup) do
 
-    {:ok, in_progress_sup} = Supervisor.start_child(sup, supervisor_spec)
-		{:ok, active_games_sup} = Supervisor.start_child(sup, other_spec)
+    {:ok, in_progress_sup} = Supervisor.start_child(sup, supervisor_spec())
+		{:ok, active_games_sup} = Supervisor.start_child(sup, other_spec())
 
 		new_worker(in_progress_sup)
 
@@ -30,7 +28,7 @@ defmodule NhlPhoenix.Logic do
 
 	def handle_info({:games_are_on, games}, state) do
 		g = get_game_ids(games)
-		childs = Supervisor.which_children(state.active)
+		# childs = Supervisor.which_children(state.active)
 
 		Enum.each(g, fn(game_id) ->
 			 new_game(state, game_id)
@@ -47,24 +45,21 @@ defmodule NhlPhoenix.Logic do
 
 	defp new_game(state, game_id ) do
 		case Supervisor.start_child(state.active, [[game_id]]) do
-	    {:ok, worker} -> {:ok, game_id}
+	    {:ok, _worker} -> {:ok, game_id}
 			{:error, {:already_started, _pid}} -> {:error, :process_already_exists}
       other -> {:error, other}
 		end
 	end
 
 	defp new_worker(sup) do
-    {:ok, worker} = Supervisor.start_child(sup, [[]])
-    worker
+    {:ok, _worker} = Supervisor.start_child(sup, [[]])
 	end
 
 	defp supervisor_spec do
-	  # opts = [restart: :temporary]
 	  supervisor(NhlPhoenix.ProgressSuper, [])
 	end
 
 	defp other_spec do
-	  # opts = [restart: :temporary]
 	  supervisor(NhlPhoenix.ActiveSuper, [])
 	end
 

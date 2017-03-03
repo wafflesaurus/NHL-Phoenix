@@ -50,5 +50,5 @@ defmodule ProgressWorker do
 	defp notify_parent(body) do
 		send(NhlPhoenix.Logic, {:games_are_on, body})
 	end
-	
+
 end

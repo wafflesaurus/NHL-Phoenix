@@ -36,7 +36,7 @@ defmodule NhlPhoenix.FantasyWrapper do
   end
 
 	def get_player_stats_by_team(season, team) do
-    url = "https://api.fantasydata.net/nhl/v2/json/BoxScore/#{season}/#{team}"
+    url = "https://api.fantasydata.net/nhl/v2/json/PlayerSeasonStatsByTeam/#{season}/#{team}"
     api_call(url)
   end
 
