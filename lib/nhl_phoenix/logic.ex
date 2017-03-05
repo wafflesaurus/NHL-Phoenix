@@ -23,10 +23,9 @@ defmodule NhlPhoenix.Logic do
 	end
 
 	def handle_info(:start_worker_supervisor, sup) do
+    {:ok, in_progress_sup} = Supervisor.start_child(sup, supervisor(NhlPhoenix.ProgressSuper, []))
+		{:ok, active_games_sup} = Supervisor.start_child(sup, supervisor(NhlPhoenix.ActiveSuper, []))
 
-    {:ok, in_progress_sup} = Supervisor.start_child(sup, supervisor_spec())
-		{:ok, active_games_sup} = Supervisor.start_child(sup, other_spec())
-		IO.inspect State
 		team_stats = set_team_state()
 
 		new_worker(in_progress_sup)
@@ -35,12 +34,10 @@ defmodule NhlPhoenix.Logic do
 	end
 
 	def handle_info({:games_are_on, games}, state) do
-		g = get_game_ids(games)
-		# childs = Supervisor.which_children(state.active)
+		games
+		|> get_game_ids
+		|> start_game_processes(state)
 
-		Enum.each(g, fn(game_id) ->
-			 new_game(state, game_id)
-		end)
 		{:noreply, %{state | games: games}}
 	end
 
@@ -51,9 +48,14 @@ defmodule NhlPhoenix.Logic do
 		end)
 	end
 
+	defp start_game_processes(games, state) do
+		Enum.each(games, fn(game_id) ->
+			 new_game(state, game_id)
+		end)
+	end
+
 	defp new_game(state, game_id ) do
-		IO.inspect state
-		case Supervisor.start_child(state.active, [[game_id]]) do
+		case Supervisor.start_child(state.active, [[game_id, state.team_stats]]) do
 	    {:ok, _worker} -> {:ok, game_id}
 			{:error, {:already_started, _pid}} -> {:error, :process_already_exists}
       other -> {:error, other}
@@ -62,14 +64,6 @@ defmodule NhlPhoenix.Logic do
 
 	defp new_worker(sup) do
     {:ok, _worker} = Supervisor.start_child(sup, [[]])
-	end
-
-	defp supervisor_spec do
-	  supervisor(NhlPhoenix.ProgressSuper, [])
-	end
-
-	defp other_spec do
-	  supervisor(NhlPhoenix.ActiveSuper, [])
 	end
 
  end
