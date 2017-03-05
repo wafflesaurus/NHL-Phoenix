@@ -66,12 +66,25 @@ chatInput.addEventListener("keypress", event => {
 })
 
 channel.on("new_msg", payload => {
-  let messageItem = document.createElement("li");
+  let game_container = createGameContainer(payload.game_id)
+  // let messageItem = document.createElement("li");
   var game_stats = payload.game_stats
   console.log(payload.game_stats)
-  if(game_stats) messageItem.innerText = `${game_stats.Game.HomeTeam} : ${game_stats.Game.AwayTeam}`
-  messagesContainer.appendChild(messageItem)
+  if(game_stats) game_container.innerText = `${game_stats.Game.HomeTeam} : ${game_stats.Game.AwayTeam} ${game_stats.Game.TimeRemainingMinutes}:${game_stats.Game.TimeRemainingSeconds} ${game_stats.Game.HomeTeamScore}-${game_stats.Game.AwayTeamScore}`
+  // messagesContainer.appendChild(messageItem)
 })
+
+function createGameContainer(gameID){
+  var game = document.getElementById(gameID)
+  if(game === null){
+    console.log('asdfasdfasdf')
+     game = document.createElement("div")
+     game.setAttribute("id", gameID)
+     messagesContainer.appendChild(game)
+   }
+   console.log(game)
+   return game
+}
 
 channel.join()
   .receive("ok", resp => { console.log("Joined successfully", resp) })

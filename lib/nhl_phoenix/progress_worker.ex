@@ -24,7 +24,7 @@ defmodule ProgressWorker do
 	end
 
 	defp schedule_work() do
-    Process.send_after(self(), :work, 10000) # In 2 hours
+    Process.send_after(self(), :work, 60000 * 5) # In 2 hours
   end
 
   defp in_progress?({:ok, %HTTPoison.Response{body: body, status_code: 200}}) do

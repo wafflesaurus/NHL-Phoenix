@@ -25,13 +25,13 @@ defmodule ActiveWorker do
 			IO.inspect score["Game"]["HomeTeam"]
 		end
 
-		NhlPhoenix.Endpoint.broadcast! "room:lobby", "new_msg", %{body: "Active Games Ping", game_stats: score, team_stats: team_stats}
+		NhlPhoenix.Endpoint.broadcast! "room:lobby", "new_msg", %{game_id: game_id, game_stats: score, team_stats: team_stats}
 		schedule_work()
 		{:noreply, state}
 	end
 
 	defp schedule_work() do
-    Process.send_after(self(), :active_work, 10000) # In 2 hours
+    Process.send_after(self(), :active_work, 1000 * 60 * 5 ) # In 2 hours
   end
 
   defp parse_response({:ok, %HTTPoison.Response{body: body, status_code: 200}}) do
